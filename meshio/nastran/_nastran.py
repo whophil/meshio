@@ -107,6 +107,7 @@ def read_buffer(f):
         else:
             break
 
+    eof = False
     while True:
         # End loop when ENDDATA detected
         if next_line.startswith("ENDDATA"):
@@ -116,8 +117,10 @@ def read_buffer(f):
         chunks = _chunk_line(next_line)
         while True:
             next_line = f.readline()
+            print(next_line)
             if not next_line:
-                exit(1)
+                eof = True
+                break
             next_line = next_line.rstrip()
             # Blank lines or comments
             if len(next_line) < 4 or next_line.startswith(("$", "//", "#")):
@@ -127,6 +130,9 @@ def read_buffer(f):
                 chunks += _chunk_line(next_line)[1:]
             else:
                 break
+
+        if eof:
+            break
 
         chunks = [chunk.strip() for chunk in chunks]
 
